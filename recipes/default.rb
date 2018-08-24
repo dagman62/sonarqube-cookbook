@@ -48,9 +48,11 @@ if platform == 'ubuntu' || platform == 'debian'
     sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
     sudo apt-get update
     sudo apt-get upgrade
-    sudo apt-get install -y pgadmin4
     EOH
     action :run
+  end
+  package 'pgadmin4' do
+    action :install
   end
 elsif platform == 'centos' || platform == 'fedora'
   bash 'Install pgAdmin' do
