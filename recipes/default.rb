@@ -60,7 +60,7 @@ elsif platform == 'centos' || platform == 'fedora'
     EOH
     action :run
   end
-  package 'pgAdmin4' do
+  package 'pgadmin4' do
     action :install
   end
 else
