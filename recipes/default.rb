@@ -7,11 +7,11 @@
 platform = node['platform']
 
 if platform == 'ubuntu' || platform == 'debian'
-  package %w(postgresql postgresql-client) do 
+  package %w(postgresql-10 postgresql-client-10 wget ca-certificates) do 
     action :install
   end
 elsif platform == 'centos' || platform == 'fedora'
-  package %w(postgresql postgresql-server) do 
+  package %w(postgresql10-server postgresql10) do 
     action :install
   end
 else
@@ -39,6 +39,34 @@ bash 'Create Database User and Grants' do
   psql -c "grant all privileges on database sonar to sonar"
   EOH
   action :run
+end
+
+if platform == 'ubuntu' || platform == 'debian'
+  bash 'Configure and Install PgAdmin' do
+    code <<-EOH
+    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
+    sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
+    sudo apt-get update
+    sudo apt-get upgrade
+    sudo apt-get install -y pgadmin4
+    EOH
+    action :run
+  end
+elsif platform == 'centos' || platform == 'fedora'
+  bash 'Install pgAdmin' do
+    code <<-EOH
+    rpm -Uvh https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
+    yum update -y
+    EOH
+    action :run
+  end
+  package 'pgAdmin4' do
+    action :install
+  end
+else
+  log 'This platform is not supported' do
+    level :info
+  end
 end
 
 
