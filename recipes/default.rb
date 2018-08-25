@@ -71,6 +71,24 @@ else
   end
 end
 
+if platform == 'ubuntu' || platform == 'debian'
+  cookbook_file '/etc/postgresql/10/main/pg_hba.conf' do
+    source 'pg_hba.conf'
+    owner 'root'
+    group 'root'
+    mode '0640'
+    action :create
+  end
+  cookbook_file '/etc/postgresql/10/main/postgresql.conf' do
+    source 'postgresql.conf'
+    owner 'root'
+    group 'root'
+    mode '0644'
+    action :create
+  end
+end
+  
+  
 
 
 
