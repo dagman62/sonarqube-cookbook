@@ -1,0 +1,8 @@
+default['sonarqube']['dbuser'] = 'sonar'
+default['sonarqube']['dbpass'] = 'sonar'
+default['sonarqube']['db'] = 'sonar'
+default['sonarqube']['user'] = 'sonar'
+default['sonarqube']['password'] = 'sonar'
+default['sonarqube']['group'] = 'sonar'
+default['sonarqube']['homedir'] = '/opt/sonarqube'
+default['sonarqube']['version'] = '7.3'
