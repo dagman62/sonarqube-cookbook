@@ -111,7 +111,7 @@ end
 bash 'Extract Sonarqube' do
   code <<-EOH
   unzip /tmp/sonarqube.zip -d /opt
-  chmod -R sonar:sonar /opt/sonarqube-#{node['sonarqube']['version']}
+  chown -R sonar:sonar /opt/sonarqube-#{node['sonarqube']['version']}
   touch /tmp/sonar-extracted
   EOH
   action :run
