@@ -63,8 +63,10 @@ elsif platform == 'centos' || platform == 'fedora'
     code <<-EOH
     rpm -Uvh https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
     yum update -y
+    touch /tmp/repo-installed
     EOH
     action :run
+    not_if { File.exist?('/tmp/repo-installed') }
   end
   package %w(pgadmin4 pgadmin4-apache2) do
     action :install
