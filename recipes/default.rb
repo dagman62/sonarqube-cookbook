@@ -87,8 +87,9 @@ if platform == 'ubuntu' || platform == 'debian'
   end
 end
 
+$version = node['sonarqube']['version']
 remote_file '/tmp/sonarqube.zip' do
-  source "https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-#{@version}.zip"
+  source "https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-#{$version}.zip"
   owner 'root'
   group 'root'
   mode '0755'
