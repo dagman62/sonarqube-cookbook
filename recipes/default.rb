@@ -87,6 +87,14 @@ if platform == 'ubuntu' || platform == 'debian'
   end
 end
 
+remote_file '/tmp/sonarqube.zip' do
+  source 'https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-7.3.zip'
+  owner 'root'
+  group 'root'
+  mode '0755'
+  action :create
+end
+
 
 
 
