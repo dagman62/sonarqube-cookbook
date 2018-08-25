@@ -1,0 +1,15 @@
+[Unit]
+Description=SonarQube Scanner
+After=network.target
+
+[Service]
+Type=forking
+User=<%= @user %>
+Group=<%= @group %>
+
+ExecStart=<%= @homedir %>/bin/linux-x86-64/sonar.sh start
+ExecReload=<%= @homedir %>/bin/linux-x86-64/sonar.sh restart
+ExecStop=<%= @homedir %>/bin/linux-x86-64/sonar.sh stop
+
+[Install]
+WantedBy=multi-user.target

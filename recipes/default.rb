@@ -87,16 +87,68 @@ if platform == 'ubuntu' || platform == 'debian'
   end
 end
 
-$version = node['sonarqube']['version']
 remote_file '/tmp/sonarqube.zip' do
-  source "https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-#{$version}.zip"
+  source "https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-#{node['sonarqube']['version']}.zip"
+  owner 'root'
+  group 'root'
+  mode '0755'
+  action :create
+end
+
+user "#{node['sonarqube']['user']}" do
+  comment 'Sonarqube Service Account'
+  shell '/usr/sbin/nologin'
+  action :create
+end
+
+group "#{node['sonarqube']['group']}" do
+  action :create
+end
+
+bash 'Extract Sonarqube' do
+  code <<-EOH
+  unzip /tmp/sonarqube.zip -d /opt
+  chmod -R sonar:sonar /opt/sonarqube-#{node['sonarqube']['version']}
+  touch /tmp/sonar-extracted
+  EOH
+  action :run
+  not_if { File.exist?('/tmp/sonar-extracted') }
+end
+
+link "#{node['sonarqube']['homedir']}" do
+  to "/opt/sonarqube-#{node['sonarqube']['version']}"
+  link_type :symbolic
+end
+
+template "#{node['sonarqube']['homedir']}/conf/sonar.properties" do
+  source 'sonar.properties.erb'
+  owner 'sonar'
+  group 'sonar'
+  mode '0755'
+  variables ({
+    :dbuser   =>  node['sonarqube']['dbuser'],
+    :dbpass   =>  node['sonarqube']['dbpass'],
+    :dbname   =>  node['sonarqube']['dbname'],
+    :homedir  =>  node['sonarqube']['homedir'],
+  })
+  action :create
+end
+
+template '/etc/systemd/system/sonar.service' do
+  source 'sonar.service.erb'
   owner 'root'
   group 'root'
   mode '0755'
   variables ({
-    :version  =>  node['sonarqube']['version'],
+    :user     =>  node['sonarqube']['user'],
+    :group    =>  node['sonarqube']['group'],
+    :homedir  =>  node['sonarqube']['homedir'], 
   })
   action :create
+end
+
+service 'sonar' do
+  action [:start, :enable]
 end
 
 
