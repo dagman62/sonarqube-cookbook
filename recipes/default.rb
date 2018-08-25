@@ -53,7 +53,7 @@ if platform == 'ubuntu' || platform == 'debian'
     EOH
     action :run
   end
-  package 'pgadmin4' do
+  package %w(pgadmin4 pgadmin4-apache2) do
     action :install
   end
 elsif platform == 'centos' || platform == 'fedora'
