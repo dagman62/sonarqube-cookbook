@@ -34,9 +34,8 @@ end
 bash 'Create Database User and Grants' do
   code <<-EOH
   su - postgres
-  psql -c "create database sonar"
-  psql -c "create user sonar with password 'sonar'"
-  psql -c "grant all privileges on database sonar to sonar"
+  createuser -U postgres -SDRw sonar
+  createdb -U postgres -O sonar sonar
   EOH
   action :run
 end
