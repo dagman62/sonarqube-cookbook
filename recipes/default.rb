@@ -7,11 +7,11 @@
 platform = node['platform']
 
 if platform == 'ubuntu' || platform == 'debian'
-  package %w(postgresql-10 postgresql-client-10 wget ca-certificates) do 
+  package %w(postgresql postgresql-client postgresql-all wget ca-certificates) do 
     action :install
   end
 elsif platform == 'centos' || platform == 'fedora'
-  package %w(postgresql10-server postgresql10) do 
+  package %w(postgresql-server postgresql) do 
     action :install
   end
 else
@@ -31,26 +31,46 @@ service 'postgresql' do
   action [:start, :enable]
 end
 
-bash 'Create Database User and Grants' do
-  code <<-EOH
-  sudo -u postgres createuser -U postgres -SDRw #{node['sonarqube']['dbuser']}
-  sudo -u postgres createdb -U postgres -O #{node['sonarqube']['dbuser']} #{node['sonarqube']['dbname']}
-  sudo -u postgres psql -c "alter user sonar with password #{node['sonarqube']['dbuser']}"
-  sudo -u postgres psql -c "alter user postgres with password 'postgres'"
-  touch /tmp/users-db-done
-  EOH
+template '/tmp/admin.sh' do
+  source 'admin.sh.erb'
+  owner 'root'
+  group 'root'
+  mode '0755'
+  variables ({
+    :dbuser       =>  node['sonarqube']['dbuser'],
+    :dbpass       =>  node['sonarqube']['dbpass'],
+    :dbname       =>  node['sonarqube']['dbname'],
+    :dbadmin      =>  node['sonarqube']['dbadmin'],
+    :dbadminpass  =>  node['sonarqube']['dbadminpass'],
+  })
+  action :create
+end
+
+execute 'Create Database and Users' do
+  command 'bash /tmp/admin.sh | tee -a /tmp/users-done'
   action :run
-  not_if { File.exist?('/tmp/users-db-done') }
+  not_if { File.exist?('/tmp/users-done') }
+end
+
+cookbook_file '/tmp/pgadmin4.key' do
+  source 'pgadmin4.key'
+  owner 'root'
+  group 'root'
+  mode '0755'
+  action :create
+end
+
+execute 'Install Key' do
+  command 'apt-key add /tmp/pgadmin4.key | tee -a /tmp/key-installed'
+  action :run
+  not_if { File.exist?('/tmp/key-installed') }
 end
 
 if platform == 'ubuntu' || platform == 'debian'
   bash 'Configure and Install PgAdmin' do
     code <<-EOH
-    wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | sudo apt-key add -
     sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
     sudo apt-get update
-    sudo apt-get upgrade -y
-    sudo apt --fix-broken install -y
     touch /tmp/configured
     EOH
     action :run
@@ -93,6 +113,10 @@ if platform == 'ubuntu' || platform == 'debian'
     mode '0644'
     action :create
   end
+end
+
+service 'postgresql' do
+  action :reload
 end
 
 remote_file '/tmp/sonarqube.zip' do

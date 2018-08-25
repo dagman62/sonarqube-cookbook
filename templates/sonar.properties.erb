@@ -106,13 +106,13 @@ sonar.jdbc.url=jdbc:postgresql://localhost/<%= @dbname %>
 # Binding IP address. For servers with more than one IP address, this property specifies which
 # address will be used for listening on the specified ports.
 # By default, ports will be used on all IP addresses associated with the server.
-sonar.web.host=0.0.0.0
+#sonar.web.host=0.0.0.0
 
 # Web context. When set, it must start with forward slash (for example /sonarqube).
 # The default value is root context (empty value).
 #sonar.web.context=
 # TCP port for incoming HTTP connections. Default value is 9000.
-sonar.web.port=9000
+#sonar.web.port=9000
 
 
 # The maximum number of connections that the server will accept and process at any given time.
@@ -404,8 +404,8 @@ sonar.web.port=9000
 # Paths to persistent data files (embedded database and search index) and temporary files.
 # Can be absolute or relative to installation directory.
 # Defaults are respectively <installation home>/data and <installation home>/temp
-sonar.path.data=<%= @homedir %>/data
-sonar.path.temp=<%= @homedir %>/temp
+#sonar.path.data=data
+#sonar.path.temp=temp
 
 # Telemetry - Share anonymous SonarQube statistics
 # By sharing anonymous SonarQube statistics, you help us understand how SonarQube is used so we can improve the product to work even better for you.
