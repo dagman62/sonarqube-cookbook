@@ -4,4 +4,4 @@ sudo -u postgres psql -c "create user <%= @dbuser %> with password '<%= @dbpass 
 sudo -u postgres psql -c "create database sonar"
 sudo -u postgres psql -c "grant all privileges on database <%= @dbname %> to <%= @dbuser %>"
 sudo -u postgres psql -c "create user <%= @dbadmin %> with password '<%= @dbadminpass %>'"
-sudo -u postgres psql -c "grant all privileges on database postgres to <%= @dbuser %>"
+sudo -u postgres psql -c "grant all privileges on database postgres to <%= @dbadmin %>"
