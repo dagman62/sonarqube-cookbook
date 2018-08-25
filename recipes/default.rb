@@ -36,6 +36,7 @@ bash 'Create Database User and Grants' do
   sudo -u postgres createuser -U postgres -SDRw #{node['sonarqube']['dbuser']}
   sudo -u postgres createdb -U postgres -O #{node['sonarqube']['dbuser']} #{node['sonarqube']['dbname']}
   sudo -u postgres psql -c "alter user sonar with password #{node['sonarqube']['dbuser']}"
+  sudo -u postgres psql -c "alter user postgres with password 'postgres'"
   touch /tmp/users-db-done
   EOH
   action :run
