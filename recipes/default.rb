@@ -50,8 +50,10 @@ if platform == 'ubuntu' || platform == 'debian'
     sudo apt-get update
     sudo apt-get upgrade -y
     sudo apt --fix-broken install -y
+    touch /tmp/configured
     EOH
     action :run
+    not_if { File.exist?('/tmp/configured') }
   end
   package %w(pgadmin4 pgadmin4-apache2) do
     action :install
