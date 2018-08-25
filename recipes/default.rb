@@ -33,11 +33,13 @@ end
 
 bash 'Create Database User and Grants' do
   code <<-EOH
-  su - postgres
-  createuser -U postgres -SDRw #{node['sonarqube']['dbuser']}
-  createdb -U postgres -O #{node['sonarqube']['dbuser']} #{node['sonarqube']['dbname']}
+  sudo -u postgres createuser -U postgres -SDRw #{node['sonarqube']['dbuser']}
+  sudo -u postgres createdb -U postgres -O #{node['sonarqube']['dbuser']} #{node['sonarqube']['dbname']}
+  sudo -u postgres psql -c "alter user sonar with password #{node['sonarqube']['dbuser']}"
+  touch /tmp/users-db-done
   EOH
   action :run
+  not_if { File.exist?('/tmp/users-db-done') }
 end
 
 if platform == 'ubuntu' || platform == 'debian'
