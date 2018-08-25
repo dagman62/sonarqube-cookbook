@@ -7,11 +7,11 @@
 platform = node['platform']
 
 if platform == 'ubuntu' || platform == 'debian'
-  package %w(postgresql postgresql-client postgresql-all wget ca-certificates) do 
+  package %w(postgresql postgresql-client postgresql-all wget ca-certificates pgadmin3) do 
     action :install
   end
 elsif platform == 'centos' || platform == 'fedora'
-  package %w(postgresql-server postgresql) do 
+  package %w(postgresql-server postgresql pgadmin4) do 
     action :install
   end
 else
@@ -64,38 +64,6 @@ execute 'Install Key' do
   command 'apt-key add /tmp/pgadmin4.key | tee -a /tmp/key-installed'
   action :run
   not_if { File.exist?('/tmp/key-installed') }
-end
-
-if platform == 'ubuntu' || platform == 'debian'
-  bash 'Configure and Install PgAdmin' do
-    code <<-EOH
-    sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt/ $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list'
-    sudo apt-get update
-    touch /tmp/configured
-    EOH
-    action :run
-    not_if { File.exist?('/tmp/configured') }
-  end
-  package %w(pgadmin4 pgadmin4-apache2) do
-    action :install
-  end
-elsif platform == 'centos' || platform == 'fedora'
-  bash 'Install pgAdmin' do
-    code <<-EOH
-    rpm -Uvh https://download.postgresql.org/pub/repos/yum/10/redhat/rhel-7-x86_64/pgdg-centos10-10-2.noarch.rpm
-    yum update -y
-    touch /tmp/repo-installed
-    EOH
-    action :run
-    not_if { File.exist?('/tmp/repo-installed') }
-  end
-  package %w(pgadmin4 pgadmin4-apache2) do
-    action :install
-  end
-else
-  log 'This platform is not supported' do
-    level :info
-  end
 end
 
 if platform == 'ubuntu' || platform == 'debian'
