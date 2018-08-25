@@ -34,8 +34,8 @@ end
 bash 'Create Database User and Grants' do
   code <<-EOH
   su - postgres
-  createuser -U postgres -SDRw sonar
-  createdb -U postgres -O sonar sonar
+  createuser -U postgres -SDRw #{node['sonarqube']['dbuser']}
+  createdb -U postgres -O #{node['sonarqube']['dbuser']} #{node['sonarqube']['dbname']}
   EOH
   action :run
 end
