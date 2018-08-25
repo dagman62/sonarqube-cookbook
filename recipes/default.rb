@@ -88,10 +88,13 @@ if platform == 'ubuntu' || platform == 'debian'
 end
 
 remote_file '/tmp/sonarqube.zip' do
-  source 'https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-7.3.zip'
+  source "https://sonarsource.bintray.com/Distribution/sonarqube/sonarqube-#{@version}.zip"
   owner 'root'
   group 'root'
   mode '0755'
+  variables ({
+    :version  =>  node['sonarqube']['version'],
+  })
   action :create
 end
 
